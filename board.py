@@ -88,10 +88,13 @@ class Board(QWidget):
             mime = event.mimeData()
             checker_center_pos = event.pos() - mime.property('offset') + QPoint(50, 50)
             square = self.get_position(point=checker_center_pos)
-            if self.this_turn_of == self.moved_checker.color and self.square_is_available(square):
+            distance_y, distance_x = square.row - self.moved_checker.square.row, square.col - self.moved_checker.square.col
+            if self.this_turn_of == self.moved_checker.color and self.square_is_available(square) and \
+                    ((abs(distance_y) == 2 and abs(distance_x) == 2 and
+                      self.squares[self.moved_checker.square.row + distance_y // 2][self.moved_checker.square.col + distance_x // 2].checker is not None) or
+                     (abs(distance_y) == 1 and abs(distance_x) == 1)) :
                 row, col = self.moved_checker.square.row, self.moved_checker.square.col
                 self.moved_checker.move(point=event.pos() - mime.property('offset'), square=square)
-                distance_y, distance_x = self.moved_checker.square.row - row, self.moved_checker.square.col - col
                 if abs(distance_x) == 2 and abs(distance_y) == 2:
                     self.squares[row + distance_y // 2][col + distance_x // 2].checker.set_captured()
                 self.this_turn_of = 'black' if self.this_turn_of == 'white' else 'white'
